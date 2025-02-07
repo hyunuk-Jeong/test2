@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>삼각형 이동하기</title>
+    <style>
+        /* 캔버스 스타일 */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        canvas {
+            border: 1px solid black;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <!-- 아임웹에서 HTML 블록에 이 코드를 삽입할 수 있습니다. -->
+    <canvas id="triangleCanvas" width="800" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById("triangleCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let triangles = [
+            { x: 100, y: 100, id: 1 },
+            { x: 300, y: 100, id: 2 },
+            { x: 500, y: 100, id: 3 },
+            { x: 200, y: 300, id: 4 },
+            { x: 400, y: 300, id: 5 }
+        ];
+
+        let selectedTriangle = null;
+        let offsetX, offsetY;
+
+        // 삼각형 그리기
+        function drawTriangle(x, y) {
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x + 50, y + 100);  // 왼쪽 아래로
+            ctx.lineTo(x - 50, y + 100);  // 오른쪽 아래로
+            ctx.closePath();
+            ctx.fillStyle = 'red';
+            ctx.fill();
+        }
+
+        // 캔버스에 삼각형 5개 그리기
+        function drawTriangles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);  // 캔버스 초기화
+            triangles.forEach(triangle => {
+                drawTriangle(triangle.x, triangle.y);
+            });
+        }
+
+        // 마우스 클릭 시 삼각형 선택
+        canvas.addEventListener('mousedown', (e) => {
+            const mouseX = e.offsetX;
+            const mouseY = e.offsetY;
+
+            // 클릭한 위치가 삼각형 안에 있는지 확인
+            selectedTriangle = null;
+            triangles.forEach(triangle => {
+                if (mouseX > triangle.x - 50 && mouseX < triangle.x + 50 && mouseY > triangle.y && mouseY < triangle.y + 100) {
+                    selectedTriangle = triangle;
+                    offsetX = mouseX - triangle.x;
+                    offsetY = mouseY - triangle.y;
+                }
+            });
+        });
+
+        // 마우스 이동 시 삼각형 이동
+        canvas.addEventListener('mousemove', (e) => {
+            if (selectedTriangle) {
+                selectedTriangle.x = e.offsetX - offsetX;
+                selectedTriangle.y = e.offsetY - offsetY;
+                drawTriangles();
+            }
+        });
+
+        // 마우스 버튼 뗄 때 선택된 삼각형 해제
+        canvas.addEventListener('mouseup', () => {
+            selectedTriangle = null;
+        });
+
+        drawTriangles();  // 페이지 로드 시 삼각형 그리기
+    </script>
+</body>
+</html>
